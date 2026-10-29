@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryFilters = document.querySelectorAll(".category-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
+  const difficultyFilter = document.getElementById("difficulty-filter");
 
   // Authentication elements
   const themeToggleButton = document.getElementById("theme-toggle");
@@ -390,7 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return "academic";
   }
 
-  // Function to fetch activities from API with optional day and time filters
+  // Function to fetch activities from API with optional day, time, and difficulty filters
   async function fetchActivities() {
     // Show loading skeletons first
     showLoadingSkeletons();
@@ -398,6 +399,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Build query string with filters if they exist
       let queryParams = [];
+
+      if (difficultyFilter.value) {
+        queryParams.push(`difficulty=${encodeURIComponent(difficultyFilter.value)}`);
+      }
 
       // Handle day filter
       if (currentDay) {
@@ -676,6 +681,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    if (details.difficulty) {
+      const difficultyLabel = document.createElement("p");
+      difficultyLabel.className = "activity-difficulty";
+      difficultyLabel.textContent = `Difficulty: ${details.difficulty}`;
+      activityCard.querySelector("h4").after(difficultyLabel);
+    }
+
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
     deleteButtons.forEach((button) => {
@@ -697,6 +709,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners for search and filter
+  difficultyFilter.addEventListener("change", fetchActivities);
+
   searchInput.addEventListener("input", (event) => {
     searchQuery = event.target.value;
     displayFilteredActivities();
